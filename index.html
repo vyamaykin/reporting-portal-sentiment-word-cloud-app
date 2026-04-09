@@ -1,0 +1,213 @@
+
+<style>
+  #outer { background: #1a1a1a; border-radius: 12px; padding: 20px; }
+  #wc-wrap { position: relative; width: 100%; min-height: 440px; }
+  #wc-canvas { display: block; width: 100%; cursor: default; }
+  #tooltip {
+    position: absolute;
+    background: #2c2c2c;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #b0b0b0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    max-width: 210px;
+    line-height: 1.55;
+    z-index: 10;
+  }
+  #tooltip strong { display: block; font-size: 13px; font-weight: 500; color: #f0f0f0; margin-bottom: 3px; }
+  .wc-legend { display: flex; gap: 20px; padding: 10px 0 0; font-size: 12px; color: #888; border-top: 0.5px solid #333; margin-top: 6px; }
+  .wc-legend span { display: flex; align-items: center; gap: 6px; }
+  .wc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .wc-hint { font-size: 11px; color: #555; margin-top: 4px; }
+</style>
+
+<div id="outer">
+  <div id="wc-wrap">
+    <canvas id="wc-canvas"></canvas>
+    <div id="tooltip"></div>
+  </div>
+  <div class="wc-legend">
+    <span><span class="wc-dot" style="background:#97C459"></span>Positive sentiment</span>
+    <span><span class="wc-dot" style="background:#F09595"></span>Negative sentiment</span>
+    <span><span class="wc-dot" style="background:#EF9F27"></span>Product bug</span>
+  </div>
+  <p class="wc-hint">Hover any word for context</p>
+</div>
+
+<script>
+const words = [
+  {text:"awesome",        freq:9, cat:1, context:"Used repeatedly by Tori when reacting to the portal and new features added live during the session."},
+  {text:"helpful",        freq:8, cat:1, context:"Tori described report thumbnails, the view counter, and digital signage access all as helpful for managers."},
+  {text:"great",          freq:8, cat:1, context:"Used to validate features like the view counter, the gateway shortcut idea, and overall session feedback."},
+  {text:"cool",           freq:7, cat:1, context:"Spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
+  {text:"perfect",        freq:6, cat:1, context:"Tori's response when features worked as expected, e.g. confirming pinning and multi-select slicers."},
+  {text:"organized",      freq:5, cat:1, context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
+  {text:"elated",         freq:5, cat:1, context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
+  {text:"intuitive",      freq:4, cat:1, context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
+  {text:"familiar",       freq:4, cat:1, context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
+  {text:"love it",        freq:4, cat:1, context:"Reaction to seeing digital signage reports accessible on-demand rather than waiting for the cycle."},
+  {text:"useful",         freq:3, cat:1, context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
+  {text:"exciting",       freq:3, cat:1, context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
+  {text:"fantastic",      freq:3, cat:1, context:"Used specifically about automating the desktop shortcut so managers don't have to set it up themselves."},
+  {text:"prominent",      freq:3, cat:1, context:"Tori asked for the selected month to be more prominent on the Month End table so it's immediately visible."},
+  {text:"clear",          freq:3, cat:1, context:"Requested for the date period label on the Month End report — managers should not have to infer it."},
+  {text:"automated",      freq:3, cat:1, context:"Strong preference for the desktop shortcut to be pushed automatically, not requiring manager action."},
+  {text:"wild",           freq:2, cat:1, context:"Tori's reaction when Vic added the digital signage workspace live during the session in seconds."},
+  {text:"natural",        freq:2, cat:1, context:"How Tori described the way managers gravitate toward reports they already recognise visually."},
+
+  {text:"terrified",      freq:8, cat:0, context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
+  {text:"delayed",        freq:7, cat:0, context:"Load time concern on first visit. Tori also flagged that managers shouldn't wait for digital signage to cycle."},
+  {text:"grayed out",     freq:6, cat:2, context:"The Analyze in Excel button was disabled in the export toolbar — Tori expected it to work and couldn't find an obvious alternative.", highlight:true},
+  {text:"scared",         freq:6, cat:0, context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
+  {text:"struggling",     freq:5, cat:0, context:"Wentzville store context — used to describe both performance and the feedback loop managers need week-by-week."},
+  {text:"confused",       freq:5, cat:0, context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
+  {text:"melt down",      freq:4, cat:0, context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
+  {text:"missing",        freq:4, cat:0, context:"Reset filters button absent from both reports. Ecom goals also missing from Month End."},
+  {text:"backwards math", freq:4, cat:0, context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
+  {text:"lost",           freq:3, cat:0, context:"Managers described as 'lost' navigating tech without guidance — 'I'm lost, I'm scared, I don't know what I'm gonna do.'"},
+  {text:"memorize",       freq:3, cat:0, context:"Without a gateway link or desktop shortcut, managers would need to memorize the portal URL — not realistic."},
+  {text:"disabled",       freq:3, cat:0, context:"Export to Excel grayed out in the toolbar, forcing users to find the hidden '...' menu on the table visual."},
+  {text:"gone forever",   freq:3, cat:0, context:"When computers are replaced or upgraded, shortcuts disappear and managers treat them as permanently lost."},
+  {text:"clicking around",freq:2, cat:0, context:"Tori's concern that without thumbnails, managers would blindly click through the old dropdown with no visual cues."},
+  {text:"not tech savvy", freq:2, cat:0, context:"Tori's characterisation of store managers — core reason the portal needs to be zero-friction to access and use."},
+];
+
+const posColor = "#97C459";
+const negColor = "#F09595";
+const hlColor  = "#EF9F27";
+
+function getColor(w) {
+  if (w.cat === 2) return hlColor;
+  return w.cat === 1 ? posColor : negColor;
+}
+
+const canvas = document.getElementById('wc-canvas');
+const wrap   = document.getElementById('wc-wrap');
+const tip    = document.getElementById('tooltip');
+const W = wrap.offsetWidth || 640;
+const H = 420;
+canvas.width  = W * devicePixelRatio;
+canvas.height = H * devicePixelRatio;
+canvas.style.width  = W + 'px';
+canvas.style.height = H + 'px';
+const ctx = canvas.getContext('2d');
+ctx.scale(devicePixelRatio, devicePixelRatio);
+
+const maxF = Math.max(...words.map(w => w.freq));
+const minF = Math.min(...words.map(w => w.freq));
+function fs(freq) { return Math.round(11 + (freq - minF) / (maxF - minF) * 34); }
+
+const placedBoxes = [];
+const placedWords = [];
+
+function overlaps(x, y, w, h) {
+  for (const p of placedBoxes) {
+    if (x < p.x + p.w + 6 && x + w + 6 > p.x && y < p.y + p.h + 4 && y + h + 4 > p.y) return true;
+  }
+  return false;
+}
+
+ctx.textAlign    = 'center';
+ctx.textBaseline = 'middle';
+const cx = W / 2, cy = H / 2;
+const sorted = [...words].sort((a, b) => b.freq - a.freq);
+
+for (const word of sorted) {
+  const size = fs(word.freq);
+  const weight = word.freq > 6 ? 500 : 400;
+  ctx.font = `${weight} ${size}px -apple-system, sans-serif`;
+  const tw = ctx.measureText(word.text).width;
+  const th = size * 1.25;
+
+  for (let r = 0; r < 300; r += 1.5) {
+    const angle = r * 0.42;
+    const x = cx + r * Math.cos(angle) - tw / 2;
+    const y = cy + r * 0.58 * Math.sin(angle) - th / 2;
+    if (x < 6 || x + tw > W - 6 || y < 6 || y + th > H - 6) continue;
+    if (!overlaps(x, y, tw, th)) {
+      placedBoxes.push({x, y, w: tw, h: th});
+      placedWords.push({word, x, y, w: tw, h: th, cx: x + tw/2, cy: y + th/2, size, weight});
+      ctx.globalAlpha = word.cat === 2 ? 1 : (0.75 + 0.25 * ((word.freq - minF) / (maxF - minF)));
+      ctx.fillStyle = getColor(word);
+      ctx.fillText(word.text, x + tw / 2, y + th / 2);
+      if (word.cat === 2) {
+        ctx.globalAlpha = 0.5;
+        ctx.strokeStyle = hlColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(x - 3, y - 2, tw + 6, th + 4, 4);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      break;
+    }
+  }
+}
+
+function redraw(hoverIdx) {
+  ctx.clearRect(0, 0, W, H);
+  placedWords.forEach((p, i) => {
+    const isHover = i === hoverIdx;
+    ctx.font = `${p.weight} ${p.size}px -apple-system, sans-serif`;
+    ctx.globalAlpha = isHover ? 1 : (p.word.cat === 2 ? 1 : (0.75 + 0.25 * ((p.word.freq - minF) / (maxF - minF))));
+    ctx.fillStyle = getColor(p.word);
+    if (isHover) {
+      ctx.save();
+      ctx.translate(p.cx, p.cy);
+      ctx.scale(1.08, 1.08);
+      ctx.fillText(p.word.text, 0, 0);
+      ctx.restore();
+    } else {
+      ctx.fillText(p.word.text, p.cx, p.cy);
+    }
+    if (p.word.cat === 2) {
+      ctx.globalAlpha = isHover ? 0.9 : 0.5;
+      ctx.strokeStyle = hlColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(p.x - 3, p.y - 2, p.w + 6, p.h + 4, 4);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+
+let currentHover = -1;
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  let found = -1;
+  for (let i = 0; i < placedWords.length; i++) {
+    const p = placedWords[i];
+    if (mx >= p.x - 3 && mx <= p.x + p.w + 3 && my >= p.y - 2 && my <= p.y + p.h + 2) { found = i; break; }
+  }
+  if (found !== currentHover) {
+    currentHover = found;
+    redraw(currentHover);
+    if (found >= 0) {
+      canvas.style.cursor = 'pointer';
+      const p = placedWords[found];
+      const w = p.word;
+      tip.innerHTML = `<strong>${w.text}</strong>${w.context}`;
+      const tx = Math.min(p.x, W - 215);
+      const ty = p.y + p.h + 8 > H - 90 ? p.y - 95 : p.y + p.h + 8;
+      tip.style.left = tx + 'px';
+      tip.style.top  = ty + 'px';
+      tip.style.opacity = '1';
+    } else {
+      canvas.style.cursor = 'default';
+      tip.style.opacity = '0';
+    }
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  currentHover = -1;
+  redraw(-1);
+  tip.style.opacity = '0';
+});
+</script>
