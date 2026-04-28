@@ -1,4 +1,3 @@
-
 <style>
   #outer { background: #1a1a1a; border-radius: 12px; padding: 20px; }
   #wc-wrap { position: relative; width: 100%; min-height: 460px; }
@@ -46,57 +45,82 @@
     <span><span class="wc-dot" style="background:#F09595"></span>Negative sentiment</span>
     <span><span class="wc-dot" style="background:#EF9F27"></span>Needs work</span>
   </div>
-  <p class="wc-hint">Hover any word for context · Tori + Brandy sessions combined</p>
+  <p class="wc-hint">Hover any word for context · Tori + Brandy + MOKAN sessions combined</p>
 </div>
 
 <script>
 const words = [
-  {text:"awesome",         freq:9,  cat:1, context:"Used repeatedly by Tori when reacting to the portal and features added live during her session."},
-  {text:"helpful",         freq:10, cat:1, context:"Both Tori and Brandy described thumbnails, the view counter, pinning, and drill-down as helpful for managers."},
-  {text:"great",           freq:9,  cat:1, context:"Used by both participants to validate features — the view counter, gateway shortcut idea, and overall design."},
-  {text:"perfect",         freq:8,  cat:1, context:"Used by Tori and Brandy when features worked as expected — pinning, multi-select slicers, date range navigation."},
-  {text:"cool",            freq:7,  cat:1, context:"Tori's spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
-  {text:"easy",            freq:6,  cat:1, context:"Brandy: 'fairly easy to navigate,' 'easy on that,' 'looks really easy to navigate,' and 'super easy for them.'"},
-  {text:"organized",       freq:5,  cat:1, context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
-  {text:"elated",          freq:5,  cat:1, context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
-  {text:"clear",           freq:5,  cat:1, context:"Both Tori and Brandy requested clearer date labels. Brandy also found the overall layout 'very clear cut.'"},
-  {text:"nice",            freq:4,  cat:1, context:"Brandy's repeated reaction — 'really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
-  {text:"intuitive",       freq:4,  cat:1, context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
-  {text:"familiar",        freq:4,  cat:1, context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
-  {text:"love it",         freq:4,  cat:1, context:"Tori: digital signage on-demand. Brandy: 'I would love that immensely' — one centralized reporting location."},
-  {text:"exciting",        freq:3,  cat:1, context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
-  {text:"fantastic",       freq:3,  cat:1, context:"Used specifically about automating the desktop shortcut so managers don't have to set it up themselves."},
-  {text:"prominent",       freq:3,  cat:1, context:"Tori asked for the selected month to be more prominent on the Month End table so it's immediately visible."},
-  {text:"automated",       freq:3,  cat:1, context:"Strong preference for the desktop shortcut to be pushed automatically, not requiring manager action."},
-  {text:"useful",          freq:3,  cat:1, context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
-  {text:"self-explanatory",freq:2,  cat:1, context:"Brandy described the portal navigation as 'pretty self-explanatory' and 'really self-explanatory' on her first visit."},
-  {text:"eye-catching",    freq:2,  cat:1, context:"Brandy: the DM comparison chart was 'most eye-catching' — requires less processing than a data-dense table."},
-  {text:"wild",            freq:2,  cat:1, context:"Tori's reaction when Vic added the digital signage workspace live during the session in seconds."},
-  {text:"natural",         freq:2,  cat:1, context:"How Tori described the way managers gravitate toward reports they already recognise visually."},
-  {text:"support",         freq:1,  cat:1, context:"Brandy: 'I am super in support of this' — referring to consolidating all reports into one portal."},
+  // ── Tori + Brandy (original) ──────────────────────────────────────────────
+  {text:"awesome",         freq:9,  cat:1, session:"TB", context:"Used repeatedly by Tori when reacting to the portal and features added live during her session."},
+  {text:"helpful",         freq:10, cat:1, session:"TB", context:"Both Tori and Brandy described thumbnails, the view counter, pinning, and drill-down as helpful for managers."},
+  {text:"great",           freq:9,  cat:1, session:"TB", context:"Used by both participants to validate features — the view counter, gateway shortcut idea, and overall design."},
+  {text:"perfect",         freq:8,  cat:1, session:"TB", context:"Used by Tori and Brandy when features worked as expected — pinning, multi-select slicers, date range navigation."},
+  {text:"cool",            freq:7,  cat:1, session:"TB", context:"Tori's spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
+  {text:"easy",            freq:6,  cat:1, session:"TB", context:"Brandy: 'fairly easy to navigate,' 'easy on that,' 'looks really easy to navigate,' and 'super easy for them.'"},
+  {text:"organized",       freq:5,  cat:1, session:"TB", context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
+  {text:"elated",          freq:5,  cat:1, session:"TB", context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
+  {text:"clear",           freq:5,  cat:1, session:"TB", context:"Both Tori and Brandy requested clearer date labels. Brandy also found the overall layout 'very clear cut.'"},
+  {text:"nice",            freq:4,  cat:1, session:"TB", context:"Brandy's repeated reaction — 'really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
+  {text:"intuitive",       freq:4,  cat:1, session:"TB", context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
+  {text:"familiar",        freq:4,  cat:1, session:"TB", context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
+  {text:"love it",         freq:4,  cat:1, session:"TB", context:"Tori: digital signage on-demand. Brandy: 'I would love that immensely' — one centralized reporting location."},
+  {text:"exciting",        freq:3,  cat:1, session:"TB", context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
+  {text:"fantastic",       freq:3,  cat:1, session:"TB", context:"Used specifically about automating the desktop shortcut so managers don't have to set it up themselves."},
+  {text:"prominent",       freq:3,  cat:1, session:"TB", context:"Tori asked for the selected month to be more prominent on the Month End table so it's immediately visible."},
+  {text:"automated",       freq:3,  cat:1, session:"TB", context:"Strong preference for the desktop shortcut to be pushed automatically, not requiring manager action."},
+  {text:"useful",          freq:3,  cat:1, session:"TB", context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
+  {text:"self-explanatory",freq:2,  cat:1, session:"TB", context:"Brandy described the portal navigation as 'pretty self-explanatory' and 'really self-explanatory' on her first visit."},
+  {text:"eye-catching",    freq:2,  cat:1, session:"TB", context:"Brandy: the DM comparison chart was 'most eye-catching' — requires less processing than a data-dense table."},
+  {text:"wild",            freq:2,  cat:1, session:"TB", context:"Tori's reaction when Vic added the digital signage workspace live during the session in seconds."},
+  {text:"natural",         freq:2,  cat:1, session:"TB", context:"How Tori described the way managers gravitate toward reports they already recognise visually."},
+  {text:"support",         freq:1,  cat:1, session:"TB", context:"Brandy: 'I am super in support of this' — referring to consolidating all reports into one portal."},
 
-  {text:"terrified",       freq:8,  cat:0, context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
-  {text:"delayed",         freq:8,  cat:0, context:"Load time concern flagged in both sessions. Brandy noted 'running slower' at home; Tori flagged the first-load wait."},
-  {text:"scared",          freq:6,  cat:0, context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
-  {text:"struggling",      freq:5,  cat:0, context:"Used to describe both store performance feedback loops and manager anxiety around tech changes."},
-  {text:"confused",        freq:5,  cat:0, context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
-  {text:"melt down",       freq:4,  cat:0, context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
-  {text:"missing",         freq:4,  cat:0, context:"Reset filters button absent from both reports. Ecom goals also missing from Month End."},
-  {text:"backwards math",  freq:4,  cat:0, context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
-  {text:"lost",            freq:3,  cat:0, context:"Managers described as 'lost' navigating tech without guidance — 'I'm lost, I'm scared, I don't know what I'm gonna do.'"},
-  {text:"memorize",        freq:3,  cat:0, context:"Without a gateway link or desktop shortcut, managers would need to memorize the portal URL — not realistic."},
-  {text:"disabled",        freq:3,  cat:0, context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu on the table visual."},
-  {text:"gone forever",    freq:3,  cat:0, context:"When computers are replaced or upgraded, shortcuts disappear and managers treat them as permanently lost."},
-  {text:"nightmare",       freq:2,  cat:0, context:"Brandy's word for the current district restructuring — 'nightmare world of trying to figure out where everything's going.'"},
-  {text:"noise",           freq:2,  cat:0, context:"Brandy invoked 'noise' to contrast data-dense emails with the chart — the chart requires less cognitive effort."},
-  {text:"slower",          freq:2,  cat:0, context:"Brandy flagged slow loading from her home network. Both sessions mentioned first-load time as a friction point."},
-  {text:"clicking around", freq:2,  cat:0, context:"Tori's concern that without thumbnails, managers would blindly click through the old dropdown with no visual cues."},
-  {text:"not tech savvy",  freq:2,  cat:0, context:"Tori's characterisation of store managers — core reason the portal needs to be zero-friction to access and use."},
+  {text:"terrified",       freq:8,  cat:0, session:"TB", context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
+  {text:"delayed",         freq:8,  cat:0, session:"TB", context:"Load time concern flagged in both sessions. Brandy noted 'running slower' at home; Tori flagged the first-load wait."},
+  {text:"scared",          freq:6,  cat:0, session:"TB", context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
+  {text:"struggling",      freq:5,  cat:0, session:"TB", context:"Used to describe both store performance feedback loops and manager anxiety around tech changes."},
+  {text:"confused",        freq:5,  cat:0, session:"TB", context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
+  {text:"melt down",       freq:4,  cat:0, session:"TB", context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
+  {text:"missing",         freq:4,  cat:0, session:"TB", context:"Reset filters button absent from both reports. Ecom goals also missing from Month End."},
+  {text:"backwards math",  freq:4,  cat:0, session:"TB", context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
+  {text:"lost",            freq:3,  cat:0, session:"TB", context:"Managers described as 'lost' navigating tech without guidance — 'I'm lost, I'm scared, I don't know what I'm gonna do.'"},
+  {text:"memorize",        freq:3,  cat:0, session:"TB", context:"Without a gateway link or desktop shortcut, managers would need to memorize the portal URL — not realistic."},
+  {text:"disabled",        freq:3,  cat:0, session:"TB", context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu on the table visual."},
+  {text:"gone forever",    freq:3,  cat:0, session:"TB", context:"When computers are replaced or upgraded, shortcuts disappear and managers treat them as permanently lost."},
+  {text:"nightmare",       freq:2,  cat:0, session:"TB", context:"Brandy's word for the current district restructuring — 'nightmare world of trying to figure out where everything's going.'"},
+  {text:"noise",           freq:2,  cat:0, session:"TB", context:"Brandy invoked 'noise' to contrast data-dense emails with the chart — the chart requires less cognitive effort."},
+  {text:"slower",          freq:2,  cat:0, session:"TB", context:"Brandy flagged slow loading from her home network. Both sessions mentioned first-load time as a friction point."},
+  {text:"clicking around", freq:2,  cat:0, session:"TB", context:"Tori's concern that without thumbnails, managers would blindly click through the old dropdown with no visual cues."},
+  {text:"not tech savvy",  freq:2,  cat:0, session:"TB", context:"Tori's characterisation of store managers — core reason the portal needs to be zero-friction to access and use."},
 
-  {text:"grayed out",      freq:7,  cat:2, context:"Analyze in Excel was disabled in both Tori's and Brandy's sessions. Both expected it to work and couldn't find the workaround.", highlight:true},
-  {text:"shortcut",        freq:3,  cat:2, context:"Both sessions flagged a desktop shortcut must be pushed automatically — managers won't set it up themselves, and it disappears after PC replacements."},
-  {text:"labels",          freq:2,  cat:2, context:"Brandy: scatter markers need store names attached — when comparing two districts' employees, you can't tell which dot belongs where."},
-  {text:"colors",          freq:2,  cat:2, context:"Brandy requested different marker colors per district when comparing DMs side by side on the chart."},
+  {text:"grayed out",      freq:7,  cat:2, session:"TB", context:"Analyze in Excel was disabled in both Tori's and Brandy's sessions. Both expected it to work and couldn't find the workaround.", highlight:true},
+  {text:"shortcut",        freq:3,  cat:2, session:"TB", context:"Both sessions flagged a desktop shortcut must be pushed automatically — managers won't set it up themselves, and it disappears after PC replacements."},
+  {text:"labels",          freq:2,  cat:2, session:"TB", context:"Brandy: scatter markers need store names attached — when comparing two districts' employees, you can't tell which dot belongs where."},
+  {text:"colors",          freq:2,  cat:2, session:"TB", context:"Brandy requested different marker colors per district when comparing DMs side by side on the chart."},
+
+  // ── MOKAN — Alec Maple + James Spearin ───────────────────────────────────
+  {text:"data driven",     freq:8,  cat:1, session:"MK", context:"Nathan about Alec and James: 'These guys are very data driven and they love this stuff.' Alec came fully prepared, having explored every report before the session."},
+  {text:"beneficial",      freq:7,  cat:1, session:"MK", context:"James used 'very beneficial' to describe aligning the report's sales metrics with how GMs are held accountable for hitting their bonus numbers."},
+  {text:"incredibly useful",freq:6, cat:1, session:"MK", context:"Alec on seeing donation averages broken down by day of week — 'that would be incredibly useful' for scheduling labor from open to close."},
+  {text:"straightforward", freq:5,  cat:1, session:"MK", context:"Alec's overall verdict on the markup report after orientation — 'everything else is pretty straightforward here.'"},
+  {text:"prepared",        freq:5,  cat:1, session:"MK", context:"Alec came to the session having already explored all the reports — 'I wanted to come prepared' — and had specific questions ready for each."},
+  {text:"confident",       freq:4,  cat:1, session:"MK", context:"James: DMs need to feel confident the number in the report is the same number that determines their quarterly bonus. Accuracy = trust."},
+  {text:"walkthroughs",    freq:4,  cat:1, session:"MK", context:"Alec strongly endorsed the in-portal tutorial overlay — 'hugely beneficial, especially for newer store managers that haven't used any of this.'"},
+  {text:"scheduling",      freq:4,  cat:1, session:"MK", context:"Alec's primary use case for bi-hourly donations: labor scheduling. Knowing expected donation volume by time block helps write the daily schedule."},
+  {text:"drill down",      freq:3,  cat:1, session:"MK", context:"Alec asked to drill from total donation view into day-of-week averages, then into two-hour increments — a nested hierarchy for scheduling intel."},
+
+  {text:"guessing",        freq:7,  cat:0, session:"MK", context:"James: 'We had to kind of guess — is this the actual number that's going to hit our bonus?' DGR data previously left DMs uncertain about accuracy."},
+  {text:"confusing",       freq:6,  cat:0, session:"MK", context:"Alec flagged the markup time-intelligence layout as 'a little confusing' — two different percentage formats near each other cause misreading."},
+  {text:"fire hose",       freq:5,  cat:0, session:"MK", context:"Vic's own phrase describing the session pace — 'drinking from a fire hose right now with all these different [reports].' Alec validated the complexity."},
+  {text:"irrelevant",      freq:4,  cat:0, session:"MK", context:"Alec: 'Some of this is a little bit irrelevant, to be honest, to the everyday user.' DMs use these reports far more than store managers do."},
+  {text:"inaccurate",      freq:4,  cat:0, session:"MK", context:"Sell-through data is skewed when viewed before a full production cycle ends — using recent partial cycles gives misleading numbers."},
+  {text:"slow Wi-Fi",      freq:3,  cat:0, session:"MK", context:"Alec, calling from a Lawrence office: 'My Wi-Fi is not great out here.' First-load latency on the markup report was noticeable in-session."},
+
+  {text:"reset filter",    freq:6,  cat:2, session:"MK", context:"Alec twice flagged the missing reset filter button — once on Month End, once on Markup. 'That one easy reset would be really kind of useful in those scenarios.'", highlight:true},
+  {text:"accountability",  freq:5,  cat:2, session:"MK", context:"James: the report's sales total must match how GMs are held accountable in their bonus. Roundup inclusion was news — and immediately actionable.", highlight:true},
+  {text:"day-of-week avg", freq:5,  cat:2, session:"MK", context:"Alec's top feature request: show average donations per day-of-week in the bi-hourly report so managers can predict volume and write smarter schedules.", highlight:true},
+  {text:"produced vs made",freq:3,  cat:2, session:"MK", context:"Alec flagged terminology: 'We typically don't say made — we'd refer to that as produced.' Consistent language matters for floor-level comprehension.", highlight:true},
+  {text:"custom dates",    freq:3,  cat:2, session:"MK", context:"Alec noticed the custom date input but didn't know it only activates after selecting 'Custom' in the dropdown — the activation trigger needs to be surfaced more clearly."},
 ];
 
 const posColor = "#97C459";
@@ -147,7 +171,7 @@ for (const word of sorted) {
   const th = size * 1.25;
   let placed = false;
 
-  for (let r = 0; r < 360; r += 1.5) {
+  for (let r = 0; r < 420; r += 1.5) {
     const angle = r * 0.40;
     const x = cx + r * Math.cos(angle) - tw / 2;
     const y = cy + r * 0.55 * Math.sin(angle) - th / 2;
