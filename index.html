@@ -1,6 +1,7 @@
+
 <style>
   #outer { background: #1a1a1a; border-radius: 12px; padding: 20px; }
-  #wc-wrap { position: relative; width: 100%; min-height: 460px; }
+  #wc-wrap { position: relative; width: 100%; min-height: 500px; }
   #wc-canvas { display: block; width: 100%; cursor: default; }
   #tooltip {
     position: absolute;
@@ -13,7 +14,7 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.15s;
-    max-width: 210px;
+    max-width: 220px;
     line-height: 1.55;
     z-index: 10;
   }
@@ -29,10 +30,11 @@
     margin-top: 6px;
     justify-content: center;
     align-items: center;
+    text-align: center;
   }
   .wc-legend span { display: flex; align-items: center; gap: 6px; }
-  .wc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-  .wc-hint { font-size: 11px; color: #555; margin-top: 4px; text-align: center; }
+  .wc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .wc-hint { width: 100%; text-align: center; font-size: 11px; color: #555; margin-top: 6px; }
 </style>
 
 <div id="outer">
@@ -41,86 +43,74 @@
     <div id="tooltip"></div>
   </div>
   <div class="wc-legend">
-    <span><span class="wc-dot" style="background:#97C459"></span>Positive sentiment</span>
-    <span><span class="wc-dot" style="background:#F09595"></span>Negative sentiment</span>
-    <span><span class="wc-dot" style="background:#EF9F27"></span>Needs work</span>
+    <span><span class="wc-dot" style="background:#97C459"></span>Positive feedback</span>
+    <span><span class="wc-dot" style="background:#F09595"></span>Negative feedback</span>
+    <span><span class="wc-dot" style="background:#EF9F27; border-radius:2px; width:12px; height:12px;"></span>Needs work</span>
+    <div class="wc-hint">Tori + Brandy + MOKAN + Kelly &amp; Brandy (session 5) · hover to read context</div>
   </div>
-  <p class="wc-hint">Hover any word for context · Tori + Brandy + MOKAN sessions combined</p>
 </div>
 
 <script>
 const words = [
-  // ── Tori + Brandy (original) ──────────────────────────────────────────────
-  {text:"awesome",         freq:9,  cat:1, session:"TB", context:"Used repeatedly by Tori when reacting to the portal and features added live during her session."},
-  {text:"helpful",         freq:10, cat:1, session:"TB", context:"Both Tori and Brandy described thumbnails, the view counter, pinning, and drill-down as helpful for managers."},
-  {text:"great",           freq:9,  cat:1, session:"TB", context:"Used by both participants to validate features — the view counter, gateway shortcut idea, and overall design."},
-  {text:"perfect",         freq:8,  cat:1, session:"TB", context:"Used by Tori and Brandy when features worked as expected — pinning, multi-select slicers, date range navigation."},
-  {text:"cool",            freq:7,  cat:1, session:"TB", context:"Tori's spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
-  {text:"easy",            freq:6,  cat:1, session:"TB", context:"Brandy: 'fairly easy to navigate,' 'easy on that,' 'looks really easy to navigate,' and 'super easy for them.'"},
-  {text:"organized",       freq:5,  cat:1, session:"TB", context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
-  {text:"elated",          freq:5,  cat:1, session:"TB", context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
-  {text:"clear",           freq:5,  cat:1, session:"TB", context:"Both Tori and Brandy requested clearer date labels. Brandy also found the overall layout 'very clear cut.'"},
-  {text:"nice",            freq:4,  cat:1, session:"TB", context:"Brandy's repeated reaction — 'really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
-  {text:"intuitive",       freq:4,  cat:1, session:"TB", context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
-  {text:"familiar",        freq:4,  cat:1, session:"TB", context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
-  {text:"love it",         freq:4,  cat:1, session:"TB", context:"Tori: digital signage on-demand. Brandy: 'I would love that immensely' — one centralized reporting location."},
-  {text:"exciting",        freq:3,  cat:1, session:"TB", context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
-  {text:"fantastic",       freq:3,  cat:1, session:"TB", context:"Used specifically about automating the desktop shortcut so managers don't have to set it up themselves."},
-  {text:"prominent",       freq:3,  cat:1, session:"TB", context:"Tori asked for the selected month to be more prominent on the Month End table so it's immediately visible."},
-  {text:"automated",       freq:3,  cat:1, session:"TB", context:"Strong preference for the desktop shortcut to be pushed automatically, not requiring manager action."},
-  {text:"useful",          freq:3,  cat:1, session:"TB", context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
-  {text:"self-explanatory",freq:2,  cat:1, session:"TB", context:"Brandy described the portal navigation as 'pretty self-explanatory' and 'really self-explanatory' on her first visit."},
-  {text:"eye-catching",    freq:2,  cat:1, session:"TB", context:"Brandy: the DM comparison chart was 'most eye-catching' — requires less processing than a data-dense table."},
-  {text:"wild",            freq:2,  cat:1, session:"TB", context:"Tori's reaction when Vic added the digital signage workspace live during the session in seconds."},
-  {text:"natural",         freq:2,  cat:1, session:"TB", context:"How Tori described the way managers gravitate toward reports they already recognise visually."},
-  {text:"support",         freq:1,  cat:1, session:"TB", context:"Brandy: 'I am super in support of this' — referring to consolidating all reports into one portal."},
+  {text:"helpful",          freq:13, cat:1, session:"all",  context:"Recurring across all sessions. Thumbnails, view counter, pinning, drill-down, color coding, and the monthly report all called helpful by multiple participants."},
+  {text:"great",            freq:11, cat:1, session:"all",  context:"Kelly: 'the reports you've developed are fantastic … great.' Also Tori + Brandy validating features across sessions."},
+  {text:"perfect",          freq:9,  cat:1, session:"TB",   context:"Tori + Brandy when features worked as expected — pinning, multi-select slicers, date range navigation."},
+  {text:"fantastic",        freq:8,  cat:1, session:"all",  context:"Kelly: 'you've done fantastic work' — general praise. Earlier sessions: automating the desktop shortcut."},
+  {text:"cool",             freq:7,  cat:1, session:"TB",   context:"Tori's spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
+  {text:"easy",             freq:6,  cat:1, session:"TB",   context:"Brandy: 'fairly easy to navigate,' 'looks really easy to navigate,' 'super easy for them.'"},
+  {text:"interesting",      freq:6,  cat:1, session:"5",    context:"Kelly used 'interesting' repeatedly — average transaction time, donation anomaly discovery, hourly donation trends, and the monthly projection formula."},
+  {text:"valuable",         freq:5,  cat:1, session:"5",    context:"Kelly on using low donation averages to catch a closed ADC door: 'it was valuable for me in that particular instance.'"},
+  {text:"organized",        freq:5,  cat:1, session:"TB",   context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
+  {text:"elated",           freq:5,  cat:1, session:"TB",   context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
+  {text:"clear",            freq:5,  cat:1, session:"TB",   context:"Tori + Brandy requested clearer date labels. Brandy (session 1) also found the overall layout 'very clear cut.'"},
+  {text:"nice",             freq:4,  cat:1, session:"TB",   context:"Brandy: 'really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
+  {text:"intuitive",        freq:4,  cat:1, session:"TB",   context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
+  {text:"familiar",         freq:4,  cat:1, session:"TB",   context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
+  {text:"love it",          freq:4,  cat:1, session:"TB",   context:"Tori: digital signage on-demand. Brandy: 'I would love that immensely' — one centralized reporting location."},
+  {text:"data driven",      freq:3,  cat:1, session:"MK",   context:"Alec/James described the portal as enabling a more data-driven culture for district managers."},
+  {text:"exciting",         freq:3,  cat:1, session:"TB",   context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
+  {text:"useful",           freq:3,  cat:1, session:"TB",   context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
+  {text:"i like that",      freq:3,  cat:1, session:"5",    context:"Kelly: 'I like that feature' on the store drill-down and 'I like to always look at last year data here also.'"},
+  {text:"self-explanatory", freq:2,  cat:1, session:"TB",   context:"Brandy (session 1) described the portal navigation as 'pretty self-explanatory.'"},
+  {text:"eye-catching",     freq:2,  cat:1, session:"TB",   context:"Brandy: the DM comparison chart was 'most eye-catching' — requires less processing than a table."},
+  {text:"walkthroughs",     freq:2,  cat:1, session:"MK",   context:"MOKAN DMs appreciated the guided walkthroughs Tavleen prepared — reduced onboarding friction."},
+  {text:"support",          freq:1,  cat:1, session:"TB",   context:"Brandy (session 1): 'I am super in support of this' — consolidating all reports into one portal."},
+  {text:"good report",      freq:3,  cat:1, session:"5",    context:"Kelly on the sales-by-cashier and monthly/annual retail reports: 'I think this is a good report.'"},
 
-  {text:"terrified",       freq:8,  cat:0, session:"TB", context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
-  {text:"delayed",         freq:8,  cat:0, session:"TB", context:"Load time concern flagged in both sessions. Brandy noted 'running slower' at home; Tori flagged the first-load wait."},
-  {text:"scared",          freq:6,  cat:0, session:"TB", context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
-  {text:"struggling",      freq:5,  cat:0, session:"TB", context:"Used to describe both store performance feedback loops and manager anxiety around tech changes."},
-  {text:"confused",        freq:5,  cat:0, session:"TB", context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
-  {text:"melt down",       freq:4,  cat:0, session:"TB", context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
-  {text:"missing",         freq:4,  cat:0, session:"TB", context:"Reset filters button absent from both reports. Ecom goals also missing from Month End."},
-  {text:"backwards math",  freq:4,  cat:0, session:"TB", context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
-  {text:"lost",            freq:3,  cat:0, session:"TB", context:"Managers described as 'lost' navigating tech without guidance — 'I'm lost, I'm scared, I don't know what I'm gonna do.'"},
-  {text:"memorize",        freq:3,  cat:0, session:"TB", context:"Without a gateway link or desktop shortcut, managers would need to memorize the portal URL — not realistic."},
-  {text:"disabled",        freq:3,  cat:0, session:"TB", context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu on the table visual."},
-  {text:"gone forever",    freq:3,  cat:0, session:"TB", context:"When computers are replaced or upgraded, shortcuts disappear and managers treat them as permanently lost."},
-  {text:"nightmare",       freq:2,  cat:0, session:"TB", context:"Brandy's word for the current district restructuring — 'nightmare world of trying to figure out where everything's going.'"},
-  {text:"noise",           freq:2,  cat:0, session:"TB", context:"Brandy invoked 'noise' to contrast data-dense emails with the chart — the chart requires less cognitive effort."},
-  {text:"slower",          freq:2,  cat:0, session:"TB", context:"Brandy flagged slow loading from her home network. Both sessions mentioned first-load time as a friction point."},
-  {text:"clicking around", freq:2,  cat:0, session:"TB", context:"Tori's concern that without thumbnails, managers would blindly click through the old dropdown with no visual cues."},
-  {text:"not tech savvy",  freq:2,  cat:0, session:"TB", context:"Tori's characterisation of store managers — core reason the portal needs to be zero-friction to access and use."},
+  {text:"terrified",        freq:8,  cat:0, session:"TB",   context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
+  {text:"delayed",          freq:8,  cat:0, session:"TB",   context:"Load time flagged in multiple sessions. Brandy noted 'running slower' at home; Tori flagged first-load wait."},
+  {text:"scared",           freq:6,  cat:0, session:"TB",   context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
+  {text:"struggling",       freq:5,  cat:0, session:"TB",   context:"Managers' anxiety around tech changes and performance feedback loops."},
+  {text:"confused",         freq:5,  cat:0, session:"TB",   context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
+  {text:"melt down",        freq:4,  cat:0, session:"TB",   context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
+  {text:"missing",          freq:5,  cat:0, session:"all",  context:"Reset filters button absent from both TB reports. Ecom goals also missing from Month End. Kelly: Wednesday was missing from week-to-date view."},
+  {text:"backwards math",   freq:4,  cat:0, session:"TB",   context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
+  {text:"lost",             freq:3,  cat:0, session:"TB",   context:"Managers described as 'lost' navigating tech without guidance."},
+  {text:"disabled",         freq:3,  cat:0, session:"TB",   context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu."},
+  {text:"gone forever",     freq:3,  cat:0, session:"TB",   context:"When computers are replaced, shortcuts disappear and managers treat them as permanently lost."},
+  {text:"guessing",         freq:3,  cat:0, session:"MK",   context:"MOKAN DMs guessing at metric definitions — 'produced vs made' distinction wasn't clear in the UI."},
+  {text:"confusing",        freq:3,  cat:0, session:"MK",   context:"Custom date filter not obviously actionable — DMs confused about why clicking dates did nothing."},
+  {text:"inaccurate",       freq:3,  cat:0, session:"MK",   context:"Employee appearing at two stores simultaneously (Carbondale + Centralia) flagged as data quality issue."},
+  {text:"nightmare",        freq:2,  cat:0, session:"TB",   context:"Brandy's word for the current district restructuring — 'nightmare world of trying to figure out where everything's going.'"},
+  {text:"noise",            freq:2,  cat:0, session:"TB",   context:"Brandy invoked 'noise' to contrast data-dense emails with the chart — chart requires less cognitive effort."},
+  {text:"slower",           freq:2,  cat:0, session:"TB",   context:"Brandy flagged slow loading from her home network. Both early sessions mentioned first-load time as friction."},
+  {text:"same cashier two stores", freq:3, cat:0, session:"5", context:"Brandy Z: Alex Piercell showing at Carbondale AND Centralia, Alex Robinson at Arnold AND Hannibal — geographically impossible. Data quality issue flagged for investigation."},
+  {text:"not refreshing",   freq:2,  cat:0, session:"5",    context:"Kelly: date range filter on the hourly donations report wasn't updating the visual — 'it doesn't look like it's refreshing.'"},
+  {text:"doesn't mean a lot", freq:2, cat:0, session:"5",   context:"Kelly on large cumulative donation totals: 'this big number doesn't mean a lot to me' without a daily average to benchmark against."},
 
-  {text:"grayed out",      freq:7,  cat:2, session:"TB", context:"Analyze in Excel was disabled in both Tori's and Brandy's sessions. Both expected it to work and couldn't find the workaround.", highlight:true},
-  {text:"shortcut",        freq:3,  cat:2, session:"TB", context:"Both sessions flagged a desktop shortcut must be pushed automatically — managers won't set it up themselves, and it disappears after PC replacements."},
-  {text:"labels",          freq:2,  cat:2, session:"TB", context:"Brandy: scatter markers need store names attached — when comparing two districts' employees, you can't tell which dot belongs where."},
-  {text:"colors",          freq:2,  cat:2, session:"TB", context:"Brandy requested different marker colors per district when comparing DMs side by side on the chart."},
-
-  // ── MOKAN — Alec Maple + James Spearin ───────────────────────────────────
-  {text:"data driven",     freq:8,  cat:1, session:"MK", context:"Nathan about Alec and James: 'These guys are very data driven and they love this stuff.' Alec came fully prepared, having explored every report before the session."},
-  {text:"beneficial",      freq:7,  cat:1, session:"MK", context:"James used 'very beneficial' to describe aligning the report's sales metrics with how GMs are held accountable for hitting their bonus numbers."},
-  {text:"incredibly useful",freq:6, cat:1, session:"MK", context:"Alec on seeing donation averages broken down by day of week — 'that would be incredibly useful' for scheduling labor from open to close."},
-  {text:"straightforward", freq:5,  cat:1, session:"MK", context:"Alec's overall verdict on the markup report after orientation — 'everything else is pretty straightforward here.'"},
-  {text:"prepared",        freq:5,  cat:1, session:"MK", context:"Alec came to the session having already explored all the reports — 'I wanted to come prepared' — and had specific questions ready for each."},
-  {text:"confident",       freq:4,  cat:1, session:"MK", context:"James: DMs need to feel confident the number in the report is the same number that determines their quarterly bonus. Accuracy = trust."},
-  {text:"walkthroughs",    freq:4,  cat:1, session:"MK", context:"Alec strongly endorsed the in-portal tutorial overlay — 'hugely beneficial, especially for newer store managers that haven't used any of this.'"},
-  {text:"scheduling",      freq:4,  cat:1, session:"MK", context:"Alec's primary use case for bi-hourly donations: labor scheduling. Knowing expected donation volume by time block helps write the daily schedule."},
-  {text:"drill down",      freq:3,  cat:1, session:"MK", context:"Alec asked to drill from total donation view into day-of-week averages, then into two-hour increments — a nested hierarchy for scheduling intel."},
-
-  {text:"guessing",        freq:7,  cat:0, session:"MK", context:"James: 'We had to kind of guess — is this the actual number that's going to hit our bonus?' DGR data previously left DMs uncertain about accuracy."},
-  {text:"confusing",       freq:6,  cat:0, session:"MK", context:"Alec flagged the markup time-intelligence layout as 'a little confusing' — two different percentage formats near each other cause misreading."},
-  {text:"fire hose",       freq:5,  cat:0, session:"MK", context:"Vic's own phrase describing the session pace — 'drinking from a fire hose right now with all these different [reports].' Alec validated the complexity."},
-  {text:"irrelevant",      freq:4,  cat:0, session:"MK", context:"Alec: 'Some of this is a little bit irrelevant, to be honest, to the everyday user.' DMs use these reports far more than store managers do."},
-  {text:"inaccurate",      freq:4,  cat:0, session:"MK", context:"Sell-through data is skewed when viewed before a full production cycle ends — using recent partial cycles gives misleading numbers."},
-  {text:"slow Wi-Fi",      freq:3,  cat:0, session:"MK", context:"Alec, calling from a Lawrence office: 'My Wi-Fi is not great out here.' First-load latency on the markup report was noticeable in-session."},
-
-  {text:"reset filter",    freq:6,  cat:2, session:"MK", context:"Alec twice flagged the missing reset filter button — once on Month End, once on Markup. 'That one easy reset would be really kind of useful in those scenarios.'", highlight:true},
-  {text:"accountability",  freq:5,  cat:2, session:"MK", context:"James: the report's sales total must match how GMs are held accountable in their bonus. Roundup inclusion was news — and immediately actionable.", highlight:true},
-  {text:"day-of-week avg", freq:5,  cat:2, session:"MK", context:"Alec's top feature request: show average donations per day-of-week in the bi-hourly report so managers can predict volume and write smarter schedules.", highlight:true},
-  {text:"produced vs made",freq:3,  cat:2, session:"MK", context:"Alec flagged terminology: 'We typically don't say made — we'd refer to that as produced.' Consistent language matters for floor-level comprehension.", highlight:true},
-  {text:"custom dates",    freq:3,  cat:2, session:"MK", context:"Alec noticed the custom date input but didn't know it only activates after selecting 'Custom' in the dropdown — the activation trigger needs to be surfaced more clearly."},
+  {text:"grayed out",       freq:7,  cat:2, session:"TB",   context:"Analyze in Excel disabled in both Tori's and Brandy's sessions. Both expected it to work and couldn't find the workaround.", highlight:true},
+  {text:"shortcut",         freq:3,  cat:2, session:"TB",   context:"Desktop shortcut must be pushed automatically — managers won't set it up themselves, disappears after PC replacements."},
+  {text:"labels",           freq:2,  cat:2, session:"TB",   context:"Brandy: scatter markers need store names attached — can't tell which dot belongs where when comparing districts."},
+  {text:"colors",           freq:3,  cat:2, session:"all",  context:"Brandy (session 1): different marker colors per district. Kelly (session 5): red/yellow/green coding for sales goal performance — match existing report conventions."},
+  {text:"reset filter",     freq:3,  cat:2, session:"MK+5", context:"MOKAN: reset not obvious. Kelly (session 5): had to use reset before selecting division/region — ordering of filter clicks was non-obvious.", highlight:true},
+  {text:"accountability",   freq:2,  cat:2, session:"MK",   context:"MOKAN DMs wanted view-count data surfaced to district level — knowing which reports their GMs actually open."},
+  {text:"day-of-week avg",  freq:3,  cat:2, session:"5",    context:"Kelly: divide donation totals by number of Sundays/Mondays/etc. to get true daily averages — 'this big number doesn't tell me if the store is performing to expectations.'", highlight:true},
+  {text:"custom dates",     freq:3,  cat:2, session:"MK+5", context:"MOKAN: custom date picker confusing. Kelly (session 5): hourly donations report date range not applying — filtering issue in Power BI needs investigation."},
+  {text:"LY comparison",    freq:3,  cat:2, session:"5",    context:"Kelly: 'I like to always look at last year data in comparison to gold.' Requested LY column or date range toggle on month-end report.", highlight:true},
+  {text:"average daily",    freq:3,  cat:2, session:"5",    context:"Kelly's primary metric: donations ÷ days submitted. She builds this manually from a pivot table every Monday. Wants it calculated in the portal.", highlight:true},
+  {text:"blank cashiers",   freq:2,  cat:2, session:"5",    context:"Transactions with no cashier assigned appearing at top of sales-by-cashier table. Tavleen to investigate data pipeline from SAP."},
+  {text:"phone numbers",    freq:2,  cat:2, session:"5",    context:"District manager contact numbers embedded in the district name field — Kelly + Brandy both said they wouldn't need those on the report."},
+  {text:"transaction time", freq:2,  cat:2, session:"5",    context:"Kelly raised measuring average cashier transaction speed (start to close) as a potential future KPI — could reveal efficiency patterns especially during busy periods."},
 ];
 
 const posColor = "#97C459";
@@ -132,78 +122,90 @@ function getColor(w) {
   return w.cat === 1 ? posColor : negColor;
 }
 
-const canvas = document.getElementById('wc-canvas');
-const wrap   = document.getElementById('wc-wrap');
-const tip    = document.getElementById('tooltip');
-const W = wrap.offsetWidth || 660;
-const H = 460;
-canvas.width  = W * devicePixelRatio;
-canvas.height = H * devicePixelRatio;
-canvas.style.width  = W + 'px';
-canvas.style.height = H + 'px';
-const ctx = canvas.getContext('2d');
-ctx.scale(devicePixelRatio, devicePixelRatio);
+const canvas = document.getElementById("wc-canvas");
+const tip = document.getElementById("tooltip");
+const ctx = canvas.getContext("2d");
 
-const maxF = Math.max(...words.map(w => w.freq));
-const minF = Math.min(...words.map(w => w.freq));
-function fs(freq) { return Math.round(10 + (freq - minF) / (maxF - minF) * 34); }
+let W, H, placedWords = [];
 
-const placedBoxes = [];
-const placedWords = [];
+function layout() {
+  const wrap = document.getElementById("wc-wrap");
+  W = wrap.clientWidth || 600;
+  H = Math.max(480, Math.round(W * 0.72));
+  canvas.width = W;
+  canvas.height = H;
+  wrap.style.minHeight = H + "px";
 
-function overlaps(x, y, w, h) {
-  for (const p of placedBoxes) {
-    if (x < p.x + p.w + 7 && x + w + 7 > p.x && y < p.y + p.h + 5 && y + h + 5 > p.y) return true;
+  const freqs = words.map(w => w.freq);
+  const minF = Math.min(...freqs), maxF = Math.max(...freqs);
+
+  function fontSize(f) {
+    const t = (f - minF) / (maxF - minF);
+    return Math.round(12 + t * (W < 500 ? 26 : 34));
   }
-  return false;
-}
 
-ctx.textAlign    = 'center';
-ctx.textBaseline = 'middle';
-const cx = W / 2, cy = H / 2;
-const sorted = [...words].sort((a, b) => b.freq - a.freq);
+  placedWords = [];
+  const occupied = [];
 
-for (const word of sorted) {
-  const size = fs(word.freq);
-  const weight = word.freq > 6 ? 500 : 400;
-  ctx.font = `${weight} ${size}px -apple-system, sans-serif`;
-  const tw = ctx.measureText(word.text).width;
-  const th = size * 1.25;
-  let placed = false;
+  function overlaps(ax, ay, aw, ah) {
+    for (const r of occupied) {
+      if (ax < r.x + r.w + 4 && ax + aw + 4 > r.x && ay < r.y + r.h + 4 && ay + ah + 4 > r.y) return true;
+    }
+    return false;
+  }
 
-  for (let r = 0; r < 420; r += 1.5) {
-    const angle = r * 0.40;
-    const x = cx + r * Math.cos(angle) - tw / 2;
-    const y = cy + r * 0.55 * Math.sin(angle) - th / 2;
-    if (x < 4 || x + tw > W - 4 || y < 4 || y + th > H - 4) continue;
-    if (!overlaps(x, y, tw, th)) {
-      placedBoxes.push({x, y, w: tw, h: th});
-      placedWords.push({word, x, y, w: tw, h: th, cx: x + tw/2, cy: y + th/2, size, weight});
-      const alpha = word.cat === 2 ? 1 : (0.72 + 0.28 * ((word.freq - minF) / (maxF - minF)));
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = getColor(word);
-      ctx.fillText(word.text, x + tw / 2, y + th / 2);
-      if (word.cat === 2) {
-        ctx.globalAlpha = 0.45;
-        ctx.strokeStyle = hlColor;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(x - 3, y - 2, tw + 6, th + 4, 4);
-        ctx.stroke();
+  const cx = W / 2, cy = H / 2;
+  const sorted = [...words].sort((a, b) => b.freq - a.freq);
+
+  for (const word of sorted) {
+    const fs = fontSize(word.freq);
+    const fw = word.cat === 2 ? "500" : "400";
+    ctx.font = `${fw} ${fs}px sans-serif`;
+    const metrics = ctx.measureText(word.text);
+    const ww = metrics.width;
+    const wh = fs * 1.2;
+
+    let placed = false;
+    for (let r = 0; r < Math.max(W, H) * 1.5; r += 3) {
+      const angle = r * 0.18 + (word.cat === 0 ? Math.PI : 0);
+      const px = cx + r * Math.cos(angle) - ww / 2;
+      const py = cy + r * Math.sin(angle) * 0.72 + wh / 2;
+      const margin = 10;
+      if (px < margin || px + ww > W - margin || py - wh < margin || py > H - margin) continue;
+      if (!overlaps(px, py - wh, ww, wh)) {
+        placedWords.push({ word, x: px, y: py - wh, w: ww, h: wh, cx: px + ww / 2, cy: py, fs, fw });
+        occupied.push({ x: px, y: py - wh, w: ww, h: wh });
+        placed = true;
+        break;
       }
-      ctx.globalAlpha = 1;
-      placed = true;
-      break;
+    }
+    if (!placed) {
+      let px, py;
+      let attempts = 0;
+      do {
+        px = margin + Math.random() * (W - ww - 2 * margin);
+        py = margin + wh + Math.random() * (H - wh - 2 * margin);
+        attempts++;
+      } while (overlaps(px, py - wh, ww, wh) && attempts < 200);
+      placedWords.push({ word, x: px, y: py - wh, w: ww, h: wh, cx: px + ww / 2, cy: py, fs, fw });
+      occupied.push({ x: px, y: py - wh, w: ww, h: wh });
     }
   }
+  redraw(-1);
 }
 
 function redraw(hoverIdx) {
   ctx.clearRect(0, 0, W, H);
+  const freqs = words.map(w => w.freq);
+  const minF = Math.min(...freqs), maxF = Math.max(...freqs);
+
   placedWords.forEach((p, i) => {
     const isHover = i === hoverIdx;
-    ctx.font = `${p.weight} ${p.size}px -apple-system, sans-serif`;
-    const baseAlpha = p.word.cat === 2 ? 1 : (0.72 + 0.28 * ((p.word.freq - minF) / (maxF - minF)));
+    ctx.font = `${p.fw} ${p.fs}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    const range = maxF - minF || 1;
+    const baseAlpha = p.word.cat === 2 ? 1 : (0.72 + 0.28 * ((p.word.freq - minF) / range));
     ctx.globalAlpha = isHover ? 1 : baseAlpha;
     ctx.fillStyle = getColor(p.word);
     if (isHover) {
@@ -228,10 +230,12 @@ function redraw(hoverIdx) {
 }
 
 let currentHover = -1;
-canvas.addEventListener('mousemove', e => {
+canvas.addEventListener("mousemove", e => {
   const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
   let found = -1;
   for (let i = 0; i < placedWords.length; i++) {
     const p = placedWords[i];
@@ -241,24 +245,27 @@ canvas.addEventListener('mousemove', e => {
     currentHover = found;
     redraw(currentHover);
     if (found >= 0) {
-      canvas.style.cursor = 'pointer';
+      canvas.style.cursor = "pointer";
       const p = placedWords[found];
-      const w = p.word;
-      tip.innerHTML = `<strong>${w.text}</strong>${w.context}`;
-      const tx = Math.min(p.x, W - 220);
-      const ty = p.y + p.h + 8 > H - 95 ? p.y - 100 : p.y + p.h + 8;
-      tip.style.left = tx + 'px';
-      tip.style.top  = ty + 'px';
-      tip.style.opacity = '1';
+      const scaleBack = rect.width / W;
+      const tx = Math.min(p.x * scaleBack, rect.width - 230);
+      const ty = (p.y + p.h) * scaleBack + 8 > rect.height - 80 ? (p.y - 90) * scaleBack : (p.y + p.h) * scaleBack + 8;
+      tip.innerHTML = `<strong>${p.word.text}</strong>${p.word.context}`;
+      tip.style.left = tx + "px";
+      tip.style.top = ty + "px";
+      tip.style.opacity = "1";
     } else {
-      canvas.style.cursor = 'default';
-      tip.style.opacity = '0';
+      canvas.style.cursor = "default";
+      tip.style.opacity = "0";
     }
   }
 });
-canvas.addEventListener('mouseleave', () => {
+canvas.addEventListener("mouseleave", () => {
   currentHover = -1;
   redraw(-1);
-  tip.style.opacity = '0';
+  tip.style.opacity = "0";
 });
+
+window.addEventListener("resize", () => { layout(); });
+layout();
 </script>
