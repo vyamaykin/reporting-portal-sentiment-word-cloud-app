@@ -1,147 +1,295 @@
 
 <style>
-  #outer { background: #1a1a1a; border-radius: 12px; padding: 20px; }
-  #wc-wrap { position: relative; width: 100%; min-height: 500px; }
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  #outer { background: #111; border-radius: 14px; padding: 20px 20px 16px; font-family: 'DM Sans', sans-serif; }
+
+  .tab-row { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab {
+    font-family: 'DM Mono', monospace;
+    padding: 0;
+    border: 1px solid #2a2a2a;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+    min-width: 110px;
+  }
+  .tab:hover { border-color: #3a3a3a; }
+  .tab.active { border-color: #484848; background: #181818; }
+  .tab-inner { padding: 8px 12px; }
+  .tab-title { color: #888; font-size: 11px; font-weight: 500; white-space: nowrap; letter-spacing: 0.02em; }
+  .tab.active .tab-title { color: #ddd; }
+  .tab-sub { font-size: 10px; color: #3a3a3a; margin-top: 3px; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+  .tab.active .tab-sub { color: #5a5a5a; }
+  .tab-count { font-size: 9px; font-family: 'DM Mono', monospace; background: #1a1a1a; color: #444; padding: 1px 6px; border-radius: 3px; margin-top: 5px; display: inline-block; border: 1px solid #222; letter-spacing: 0.03em; }
+  .tab.active .tab-count { background: #222; color: #666; border-color: #2e2e2e; }
+
+  .sentiment-wrap { margin-bottom: 12px; padding: 10px 14px; background: #141414; border-radius: 10px; border: 1px solid #1c1c1c; }
+  .sentiment-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .sentiment-title { font-size: 10px; font-family: 'DM Mono', monospace; color: #3c3c3c; letter-spacing: 0.08em; text-transform: uppercase; }
+  .sentiment-counts { font-size: 10px; font-family: 'DM Mono', monospace; color: #333; }
+  .bar-track { width: 100%; height: 5px; background: #1c1c1c; border-radius: 3px; overflow: hidden; display: flex; }
+  .bar-pos { background: #97C459; height: 100%; transition: width 0.35s ease; }
+  .bar-neg { background: #F09595; height: 100%; transition: width 0.35s ease; }
+  .bar-req { background: #EF9F27; height: 100%; transition: width 0.35s ease; }
+  .pct-row { display: flex; gap: 18px; margin-top: 7px; }
+  .pct-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: 'DM Mono', monospace; }
+  .pct-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .pct-val { color: #bbb; font-weight: 500; }
+  .pct-lbl { color: #3c3c3c; }
+
+  #wc-wrap { position: relative; width: 100%; min-height: 480px; }
   #wc-canvas { display: block; width: 100%; cursor: default; }
+
   #tooltip {
     position: absolute;
-    background: #2c2c2c;
-    border: 0.5px solid #444;
+    background: #1a1a1a;
+    border: 0.5px solid #2e2e2e;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 12px;
-    color: #b0b0b0;
+    color: #888;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.15s;
-    max-width: 220px;
-    line-height: 1.55;
+    max-width: 240px;
+    line-height: 1.6;
     z-index: 10;
+    font-family: 'DM Sans', sans-serif;
   }
-  #tooltip strong { display: block; font-size: 13px; font-weight: 500; color: #f0f0f0; margin-bottom: 3px; }
-  .wc-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 10px 0 0;
-    font-size: 12px;
-    color: #888;
-    border-top: 0.5px solid #333;
-    margin-top: 6px;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  .wc-legend span { display: flex; align-items: center; gap: 6px; }
-  .wc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .wc-hint { width: 100%; text-align: center; font-size: 11px; color: #555; margin-top: 6px; }
+  #tooltip strong { display: block; font-size: 13px; font-weight: 500; color: #eee; margin-bottom: 4px; }
+  #tooltip .tip-session { font-family: 'DM Mono', monospace; font-size: 10px; color: #404040; margin-top: 6px; letter-spacing: 0.03em; }
+
+  .wc-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 10px 0 0; font-size: 11px; color: #4a4a4a; border-top: 0.5px solid #1c1c1c; margin-top: 8px; justify-content: center; align-items: center; }
+  .wc-legend span { display: flex; align-items: center; gap: 5px; }
+  .wc-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .wc-hint { width: 100%; text-align: center; font-size: 10px; color: #333; margin-top: 5px; font-family: 'DM Mono', monospace; letter-spacing: 0.03em; }
 </style>
 
 <div id="outer">
+  <div class="tab-row" id="tab-row"></div>
+
+  <div class="sentiment-wrap">
+    <div class="sentiment-label-row">
+      <span class="sentiment-title">Sentiment breakdown</span>
+      <span class="sentiment-counts" id="sent-counts"></span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-pos" id="bar-pos"></div>
+      <div class="bar-neg" id="bar-neg"></div>
+      <div class="bar-req" id="bar-req"></div>
+    </div>
+    <div class="pct-row">
+      <span class="pct-item"><span class="pct-dot" style="background:#97C459"></span><span class="pct-val" id="pct-pos">—</span><span class="pct-lbl">positive</span></span>
+      <span class="pct-item"><span class="pct-dot" style="background:#F09595"></span><span class="pct-val" id="pct-neg">—</span><span class="pct-lbl">negative</span></span>
+      <span class="pct-item"><span class="pct-dot" style="background:#EF9F27; border-radius:2px;"></span><span class="pct-val" id="pct-req">—</span><span class="pct-lbl">needs work</span></span>
+    </div>
+  </div>
+
   <div id="wc-wrap">
     <canvas id="wc-canvas"></canvas>
     <div id="tooltip"></div>
   </div>
+
   <div class="wc-legend">
     <span><span class="wc-dot" style="background:#97C459"></span>Positive feedback</span>
     <span><span class="wc-dot" style="background:#F09595"></span>Negative feedback</span>
-    <span><span class="wc-dot" style="background:#EF9F27; border-radius:2px; width:12px; height:12px;"></span>Needs work</span>
-    <div class="wc-hint">Tori + Brandy + MOKAN + Kelly &amp; Brandy (session 5) · hover to read context</div>
+    <span><span class="wc-dot" style="background:#EF9F27; border-radius:2px; width:10px; height:10px;"></span>Needs work</span>
+    <div class="wc-hint">hover any word to read context</div>
   </div>
 </div>
 
 <script>
-const words = [
-  {text:"helpful",          freq:13, cat:1, session:"all",  context:"Recurring across all sessions. Thumbnails, view counter, pinning, drill-down, color coding, and the monthly report all called helpful by multiple participants."},
-  {text:"great",            freq:11, cat:1, session:"all",  context:"Kelly: 'the reports you've developed are fantastic … great.' Also Tori + Brandy validating features across sessions."},
-  {text:"perfect",          freq:9,  cat:1, session:"TB",   context:"Tori + Brandy when features worked as expected — pinning, multi-select slicers, date range navigation."},
-  {text:"fantastic",        freq:8,  cat:1, session:"all",  context:"Kelly: 'you've done fantastic work' — general praise. Earlier sessions: automating the desktop shortcut."},
-  {text:"cool",             freq:7,  cat:1, session:"TB",   context:"Tori's spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
-  {text:"easy",             freq:6,  cat:1, session:"TB",   context:"Brandy: 'fairly easy to navigate,' 'looks really easy to navigate,' 'super easy for them.'"},
-  {text:"interesting",      freq:6,  cat:1, session:"5",    context:"Kelly used 'interesting' repeatedly — average transaction time, donation anomaly discovery, hourly donation trends, and the monthly projection formula."},
-  {text:"valuable",         freq:5,  cat:1, session:"5",    context:"Kelly on using low donation averages to catch a closed ADC door: 'it was valuable for me in that particular instance.'"},
-  {text:"organized",        freq:5,  cat:1, session:"TB",   context:"Tori's first impression of the portal card layout — 'it's very organized.'"},
-  {text:"elated",           freq:5,  cat:1, session:"TB",   context:"Tori's word for seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
-  {text:"clear",            freq:5,  cat:1, session:"TB",   context:"Tori + Brandy requested clearer date labels. Brandy (session 1) also found the overall layout 'very clear cut.'"},
-  {text:"nice",             freq:4,  cat:1, session:"TB",   context:"Brandy: 'really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
-  {text:"intuitive",        freq:4,  cat:1, session:"TB",   context:"Described how familiar report thumbnails help managers recognise reports without knowing the exact title."},
-  {text:"familiar",         freq:4,  cat:1, session:"TB",   context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
-  {text:"love it",          freq:4,  cat:1, session:"TB",   context:"Tori: digital signage on-demand. Brandy: 'I would love that immensely' — one centralized reporting location."},
-  {text:"data driven",      freq:3,  cat:1, session:"MK",   context:"Alec/James described the portal as enabling a more data-driven culture for district managers."},
-  {text:"exciting",         freq:3,  cat:1, session:"TB",   context:"Tori's tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
-  {text:"useful",           freq:3,  cat:1, session:"TB",   context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
-  {text:"i like that",      freq:3,  cat:1, session:"5",    context:"Kelly: 'I like that feature' on the store drill-down and 'I like to always look at last year data here also.'"},
-  {text:"self-explanatory", freq:2,  cat:1, session:"TB",   context:"Brandy (session 1) described the portal navigation as 'pretty self-explanatory.'"},
-  {text:"eye-catching",     freq:2,  cat:1, session:"TB",   context:"Brandy: the DM comparison chart was 'most eye-catching' — requires less processing than a table."},
-  {text:"walkthroughs",     freq:2,  cat:1, session:"MK",   context:"MOKAN DMs appreciated the guided walkthroughs Tavleen prepared — reduced onboarding friction."},
-  {text:"support",          freq:1,  cat:1, session:"TB",   context:"Brandy (session 1): 'I am super in support of this' — consolidating all reports into one portal."},
-  {text:"good report",      freq:3,  cat:1, session:"5",    context:"Kelly on the sales-by-cashier and monthly/annual retail reports: 'I think this is a good report.'"},
+// Session IDs:
+//   all = all sessions combined
+//   RRM = MERS Regional Managers  (3 participants: regional mgr sessions + Alec + Brandy Z)
+//   MK  = MOKAN                   (2 participants: James + Kelly)
+//   DM  = DMs                     (3 participants: Angela, Brandy W., Lisa)
 
-  {text:"terrified",        freq:8,  cat:0, session:"TB",   context:"Tori's description of how store managers feel about technology — 'they are terrified of all things tech.'"},
-  {text:"delayed",          freq:8,  cat:0, session:"TB",   context:"Load time flagged in multiple sessions. Brandy noted 'running slower' at home; Tori flagged first-load wait."},
-  {text:"scared",           freq:6,  cat:0, session:"TB",   context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
-  {text:"struggling",       freq:5,  cat:0, session:"TB",   context:"Managers' anxiety around tech changes and performance feedback loops."},
-  {text:"confused",         freq:5,  cat:0, session:"TB",   context:"Date range slicer — Tori couldn't click date fields until she switched to Custom, which wasn't obvious."},
-  {text:"melt down",        freq:4,  cat:0, session:"TB",   context:"Tori's word for manager reaction when a desktop shortcut disappears after a computer replacement."},
-  {text:"missing",          freq:5,  cat:0, session:"all",  context:"Reset filters button absent from both TB reports. Ecom goals also missing from Month End. Kelly: Wednesday was missing from week-to-date view."},
-  {text:"backwards math",   freq:4,  cat:0, session:"TB",   context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
-  {text:"lost",             freq:3,  cat:0, session:"TB",   context:"Managers described as 'lost' navigating tech without guidance."},
-  {text:"disabled",         freq:3,  cat:0, session:"TB",   context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu."},
-  {text:"gone forever",     freq:3,  cat:0, session:"TB",   context:"When computers are replaced, shortcuts disappear and managers treat them as permanently lost."},
-  {text:"guessing",         freq:3,  cat:0, session:"MK",   context:"MOKAN DMs guessing at metric definitions — 'produced vs made' distinction wasn't clear in the UI."},
-  {text:"confusing",        freq:3,  cat:0, session:"MK",   context:"Custom date filter not obviously actionable — DMs confused about why clicking dates did nothing."},
-  {text:"inaccurate",       freq:3,  cat:0, session:"MK",   context:"Employee appearing at two stores simultaneously (Carbondale + Centralia) flagged as data quality issue."},
-  {text:"nightmare",        freq:2,  cat:0, session:"TB",   context:"Brandy's word for the current district restructuring — 'nightmare world of trying to figure out where everything's going.'"},
-  {text:"noise",            freq:2,  cat:0, session:"TB",   context:"Brandy invoked 'noise' to contrast data-dense emails with the chart — chart requires less cognitive effort."},
-  {text:"slower",           freq:2,  cat:0, session:"TB",   context:"Brandy flagged slow loading from her home network. Both early sessions mentioned first-load time as friction."},
-  {text:"same cashier two stores", freq:3, cat:0, session:"5", context:"Brandy Z: Alex Piercell showing at Carbondale AND Centralia, Alex Robinson at Arnold AND Hannibal — geographically impossible. Data quality issue flagged for investigation."},
-  {text:"not refreshing",   freq:2,  cat:0, session:"5",    context:"Kelly: date range filter on the hourly donations report wasn't updating the visual — 'it doesn't look like it's refreshing.'"},
-  {text:"doesn't mean a lot", freq:2, cat:0, session:"5",   context:"Kelly on large cumulative donation totals: 'this big number doesn't mean a lot to me' without a daily average to benchmark against."},
-
-  {text:"grayed out",       freq:7,  cat:2, session:"TB",   context:"Analyze in Excel disabled in both Tori's and Brandy's sessions. Both expected it to work and couldn't find the workaround.", highlight:true},
-  {text:"shortcut",         freq:3,  cat:2, session:"TB",   context:"Desktop shortcut must be pushed automatically — managers won't set it up themselves, disappears after PC replacements."},
-  {text:"labels",           freq:2,  cat:2, session:"TB",   context:"Brandy: scatter markers need store names attached — can't tell which dot belongs where when comparing districts."},
-  {text:"colors",           freq:3,  cat:2, session:"all",  context:"Brandy (session 1): different marker colors per district. Kelly (session 5): red/yellow/green coding for sales goal performance — match existing report conventions."},
-  {text:"reset filter",     freq:3,  cat:2, session:"MK+5", context:"MOKAN: reset not obvious. Kelly (session 5): had to use reset before selecting division/region — ordering of filter clicks was non-obvious.", highlight:true},
-  {text:"accountability",   freq:2,  cat:2, session:"MK",   context:"MOKAN DMs wanted view-count data surfaced to district level — knowing which reports their GMs actually open."},
-  {text:"day-of-week avg",  freq:3,  cat:2, session:"5",    context:"Kelly: divide donation totals by number of Sundays/Mondays/etc. to get true daily averages — 'this big number doesn't tell me if the store is performing to expectations.'", highlight:true},
-  {text:"custom dates",     freq:3,  cat:2, session:"MK+5", context:"MOKAN: custom date picker confusing. Kelly (session 5): hourly donations report date range not applying — filtering issue in Power BI needs investigation."},
-  {text:"LY comparison",    freq:3,  cat:2, session:"5",    context:"Kelly: 'I like to always look at last year data in comparison to gold.' Requested LY column or date range toggle on month-end report.", highlight:true},
-  {text:"average daily",    freq:3,  cat:2, session:"5",    context:"Kelly's primary metric: donations ÷ days submitted. She builds this manually from a pivot table every Monday. Wants it calculated in the portal.", highlight:true},
-  {text:"blank cashiers",   freq:2,  cat:2, session:"5",    context:"Transactions with no cashier assigned appearing at top of sales-by-cashier table. Tavleen to investigate data pipeline from SAP."},
-  {text:"phone numbers",    freq:2,  cat:2, session:"5",    context:"District manager contact numbers embedded in the district name field — Kelly + Brandy both said they wouldn't need those on the report."},
-  {text:"transaction time", freq:2,  cat:2, session:"5",    context:"Kelly raised measuring average cashier transaction speed (start to close) as a potential future KPI — could reveal efficiency patterns especially during busy periods."},
+const TABS = [
+  { id:"all", label:"All sessions",           sub:"all groups combined",  count:"8 participants" },
+  { id:"RRM", label:"MERS Regional Managers", sub:"3 participants",       count:"3 participants" },
+  { id:"MK",  label:"MOKAN",                  sub:"2 participants",       count:"2 participants" },
+  { id:"DM",  label:"DMs",                    sub:"3 participants",       count:"3 participants" },
 ];
 
-const posColor = "#97C459";
-const negColor = "#F09595";
-const hlColor  = "#EF9F27";
+const SESSION_LABEL = {
+  all:     "All sessions",
+  RRM:     "MERS Regional Managers",
+  MK:      "MOKAN",
+  DM:      "DMs",
+  "MK+RRM":"MOKAN + MERS Regional Managers",
+};
 
-function getColor(w) {
-  if (w.cat === 2) return hlColor;
-  return w.cat === 1 ? posColor : negColor;
+const allWords = [
+  // ── POSITIVE ──
+  {text:"helpful",           freq:13, cat:1, session:"all",    context:"Recurring across all sessions. Thumbnails, view counter, pinning, drill-down, color coding, and the monthly report all called helpful by multiple participants."},
+  {text:"great",             freq:11, cat:1, session:"all",    context:"Consistent praise across all groups — the reports, the layout, and the overall portal experience."},
+  {text:"perfect",           freq:9,  cat:1, session:"RRM",    context:"Used repeatedly when features worked as expected — pinning, multi-select slicers, date range navigation."},
+  {text:"fantastic",         freq:8,  cat:1, session:"all",    context:"Used across sessions to describe report quality and overall portal effort."},
+  {text:"cool",              freq:7,  cat:1, session:"RRM",    context:"Spontaneous reaction to pinning behavior, multi-district filtering, and the live digital signage addition."},
+  {text:"easy",              freq:6,  cat:1, session:"RRM",    context:"Described as 'fairly easy to navigate,' 'looks really easy to navigate,' and 'super easy for them.'"},
+  {text:"interesting",       freq:6,  cat:1, session:"MK",     context:"Used repeatedly — average transaction time, donation anomaly discovery, hourly donation trends, and the monthly projection formula."},
+  {text:"valuable",          freq:5,  cat:1, session:"MK",     context:"Using low donation averages to catch a closed ADC door: 'it was valuable for me in that particular instance.'"},
+  {text:"organized",         freq:5,  cat:1, session:"RRM",    context:"First impression of the portal card layout — 'it's very organized.'"},
+  {text:"elated",            freq:5,  cat:1, session:"RRM",    context:"Seeing all reports in one place instead of navigating MMG, Gateway, AMI, and WESA separately."},
+  {text:"clear",             freq:5,  cat:1, session:"RRM",    context:"Requested clearer date labels. Overall layout described as 'very clear cut.'"},
+  {text:"nice",              freq:4,  cat:1, session:"RRM",    context:"'Really nicely done,' 'that's nice I do like that feature,' 'that would be nice.'"},
+  {text:"intuitive",         freq:4,  cat:1, session:"RRM",    context:"Familiar report thumbnails help managers recognise reports without knowing the exact title."},
+  {text:"familiar",          freq:4,  cat:1, session:"RRM",    context:"Thumbnails help managers recognise reports — 'oh I recognise that screen with all the little dots.'"},
+  {text:"love it",           freq:4,  cat:1, session:"RRM",    context:"Digital signage on-demand. 'I would love that immensely' — one centralized reporting location."},
+  {text:"i like that",       freq:4,  cat:1, session:"all",    context:"'I like that feature' on the store drill-down and last year comparison. Also 'I like this right here' on the day-of-week donations chart."},
+  {text:"data driven",       freq:3,  cat:1, session:"RRM",    context:"The portal described as enabling a more data-driven culture for district managers."},
+  {text:"exciting",          freq:3,  cat:1, session:"RRM",    context:"Tone when discussing the rollout timeline — 'exciting' to get this to DMs and GMs."},
+  {text:"useful",            freq:3,  cat:1, session:"RRM",    context:"Applied to the view counter for understanding which reports are actually being used vs ignored."},
+  {text:"self-explanatory",  freq:2,  cat:1, session:"RRM",    context:"Portal navigation described as 'pretty self-explanatory' on first visit."},
+  {text:"eye-catching",      freq:2,  cat:1, session:"RRM",    context:"The DM comparison chart was 'most eye-catching' — requires less processing than a table."},
+  {text:"walkthroughs",      freq:2,  cat:1, session:"RRM",    context:"Guided walkthroughs appreciated — reduced onboarding friction for first-time users."},
+  {text:"support",           freq:1,  cat:1, session:"RRM",    context:"'I am super in support of this' — consolidating all reports into one portal."},
+  {text:"good report",       freq:3,  cat:1, session:"MK",     context:"On the sales-by-cashier and monthly/annual retail reports: 'I think this is a good report.'"},
+  {text:"screenshot",        freq:4,  cat:1, session:"DM",     context:"All three DM participants use screenshots to share data with store managers — faster and clearer than CSV export."},
+  {text:"dynamic",           freq:3,  cat:1, session:"DM",     context:"The time intelligence card updates dynamically when switching YTD/MTD — no manual recalculation needed."},
+  {text:"donations by day",  freq:2,  cat:1, session:"DM",     context:"The average donations by day-of-week chart received positive reactions — useful for staffing decisions."},
+  {text:"year over year",    freq:5,  cat:1, session:"DM",     context:"Year-over-year sales and donations used frequently. The markup YoY time intelligence card was well received."},
+  {text:"honest feedback",   freq:3,  cat:1, session:"DM",     context:"Candid, specific responses throughout the DMs session about MTD percentage issues and data trust gaps."},
+  {text:"store as a whole",  freq:3,  cat:1, session:"DM",     context:"The markup report is used to view store-level performance rather than individual processors."},
+
+  // ── NEGATIVE ──
+  {text:"terrified",         freq:8,  cat:0, session:"RRM",    context:"Store managers described as terrified of all things tech."},
+  {text:"delayed",           freq:8,  cat:0, session:"RRM",    context:"Load time flagged across sessions — running slower at home, and first-load wait noted."},
+  {text:"scared",            freq:6,  cat:0, session:"RRM",    context:"Store managers described as scared when asked to do tech tasks — even creating a desktop shortcut causes anxiety."},
+  {text:"struggling",        freq:6,  cat:0, session:"all",    context:"Managers' anxiety around tech in early sessions. In the DMs session: one store is struggling with sales and is understaffed."},
+  {text:"confused",          freq:5,  cat:0, session:"all",    context:"Date range slicer confusion in early sessions. DMs session: 'Am I even reading this correctly?' — portal vs AMI discrepancies."},
+  {text:"melt down",         freq:4,  cat:0, session:"RRM",    context:"Manager reaction when a desktop shortcut disappears after a computer replacement."},
+  {text:"missing",           freq:5,  cat:0, session:"all",    context:"Reset filter absent. E-com goals missing from Month End. Wednesday missing from week-to-date view. Conditional green formatting gone for 100%+ stores."},
+  {text:"backwards math",    freq:4,  cat:0, session:"RRM",    context:"The Diff Pct column forces managers to calculate in reverse — the format they know doesn't include it."},
+  {text:"lost",              freq:3,  cat:0, session:"RRM",    context:"Managers described as 'lost' navigating tech without guidance."},
+  {text:"disabled",          freq:3,  cat:0, session:"RRM",    context:"Analyze in Excel grayed out in the toolbar, forcing users to hunt for the hidden '...' menu."},
+  {text:"gone forever",      freq:3,  cat:0, session:"RRM",    context:"When computers are replaced, shortcuts disappear and managers treat them as permanently lost."},
+  {text:"guessing",          freq:3,  cat:0, session:"MK",     context:"Guessing at metric definitions — 'produced vs made' distinction wasn't clear in the UI."},
+  {text:"confusing",         freq:3,  cat:0, session:"MK",     context:"Custom date filter not obviously actionable — participants confused about why clicking dates did nothing."},
+  {text:"inaccurate",        freq:3,  cat:0, session:"MK",     context:"Employee appearing at two stores simultaneously (Carbondale + Centralia) flagged as a data quality issue."},
+  {text:"nightmare",         freq:2,  cat:0, session:"RRM",    context:"Current district restructuring described as a 'nightmare world of trying to figure out where everything's going.'"},
+  {text:"noise",             freq:2,  cat:0, session:"RRM",    context:"Data-dense emails contrasted with the chart — chart requires less cognitive effort."},
+  {text:"slower",            freq:2,  cat:0, session:"RRM",    context:"Slow loading flagged from home network. First-load time mentioned as friction in early sessions."},
+  {text:"same cashier two stores", freq:3, cat:0, session:"RRM", context:"A cashier appearing at two geographically impossible store pairs simultaneously — data quality issue flagged for investigation."},
+  {text:"not refreshing",    freq:2,  cat:0, session:"MK",     context:"Date range filter on the hourly donations report wasn't updating the visual when a new range was selected."},
+  {text:"doesn't mean a lot",freq:2,  cat:0, session:"MK",     context:"Large cumulative donation totals: 'this big number doesn't mean a lot to me' without a daily average to benchmark against."},
+  {text:"own calculations",  freq:4,  cat:0, session:"DM",     context:"'I normally just do my own calculations to get the correct percentage' — portal MTD % not always trusted."},
+  {text:"too many clicks",   freq:4,  cat:0, session:"DM",     context:"MERS preferred because it's 'just a click versus 5 clicks in AMI.' Portal should reduce clicks to answers."},
+  {text:"month to date",     freq:5,  cat:0, session:"DM",     context:"'Most of the time it's the month-to-date percentages that are off.' Primary source of portal distrust."},
+  {text:"missing a day",     freq:3,  cat:0, session:"DM",     context:"Data can be missing a full day due to internet outage or data lake lag — not visible to the user."},
+  {text:"data lake lag",     freq:3,  cat:0, session:"DM",     context:"Stores with internet outages can have data arrive a day late, skewing percentage totals in the portal."},
+  {text:"back and forth",    freq:3,  cat:0, session:"DM",     context:"All three DM participants go back and forth between MERS, AMI, and the portal. Goal is to reduce this."},
+  {text:"am I reading this right", freq:3, cat:0, session:"DM", context:"'Am I even reading the information right?' — readability concern when comparing AMI to portal numbers."},
+  {text:"understaffed",      freq:2,  cat:0, session:"DM",     context:"One store is understaffed — production is down, affecting sales. Used portal to diagnose the trend."},
+
+  // ── NEEDS WORK ──
+  {text:"grayed out",        freq:7,  cat:2, session:"RRM",    context:"Analyze in Excel disabled in multiple sessions. Participants expected it to work and couldn't find the workaround.", highlight:true},
+  {text:"shortcut",          freq:3,  cat:2, session:"RRM",    context:"Desktop shortcut must be pushed automatically — managers won't set it up themselves, disappears after PC replacements."},
+  {text:"labels",            freq:2,  cat:2, session:"RRM",    context:"Scatter markers need store names attached — can't tell which dot belongs where when comparing districts."},
+  {text:"colors",            freq:3,  cat:2, session:"all",    context:"Different marker colors requested per district. Red/yellow/green coding for goal performance also requested. Conditional green formatting broken for 100%+ stores."},
+  {text:"reset filter",      freq:3,  cat:2, session:"MK+RRM", context:"Reset not obvious. Had to use reset before selecting division/region — ordering of filter clicks was non-obvious.", highlight:true},
+  {text:"accountability",    freq:2,  cat:2, session:"MK",     context:"View-count data requested at district level — knowing which reports GMs actually open."},
+  {text:"day-of-week avg",   freq:3,  cat:2, session:"MK",     context:"Divide donation totals by number of Sundays/Mondays/etc. to get true daily averages — 'this big number doesn't tell me if the store is performing to expectations.'", highlight:true},
+  {text:"custom dates",      freq:4,  cat:2, session:"all",    context:"Date picker confusing in MOKAN session. Hourly donations date range not applying in another session. Custom date box cut off end date in DMs session.", highlight:true},
+  {text:"LY comparison",     freq:3,  cat:2, session:"MK",     context:"'I like to always look at last year data in comparison to goal.' Requested LY column or date range toggle on month-end report.", highlight:true},
+  {text:"average daily",     freq:3,  cat:2, session:"MK",     context:"Primary metric: donations ÷ days submitted. Built manually from a pivot table every Monday. Requested to be calculated in the portal.", highlight:true},
+  {text:"blank cashiers",    freq:2,  cat:2, session:"MK",     context:"Transactions with no cashier assigned appearing at top of sales-by-cashier table. Data pipeline from SAP needs investigation."},
+  {text:"phone numbers",     freq:2,  cat:2, session:"MK",     context:"District manager contact numbers embedded in the district name field — not needed on the report."},
+  {text:"transaction time",  freq:2,  cat:2, session:"MK",     context:"Average cashier transaction speed (start to close) raised as a potential future KPI."},
+  {text:"tab consolidation", freq:2,  cat:2, session:"DM",     context:"Total sales by store and allocated amounts are on separate tabs — combining them into one view would reduce navigation.", highlight:true},
+  {text:"export",            freq:3,  cat:2, session:"DM",     context:"Export feature shown to DMs group. Current preference is screenshots over CSV. Export UX needs simplification."},
+  {text:"one-stop shop",     freq:3,  cat:2, session:"DM",     context:"Stated portal goal — MERS is still the primary go-to. Portal is working toward becoming the single source of truth."},
+];
+
+function wordsForTab(id) {
+  if (id === "all") return allWords;
+  return allWords.filter(w => {
+    const s = w.session;
+    return s === id || s === "all" || s.split("+").includes(id);
+  });
 }
 
+function updateSentiment(words) {
+  let pos = 0, neg = 0, req = 0;
+  words.forEach(w => {
+    if (w.cat === 1) pos += w.freq;
+    else if (w.cat === 0) neg += w.freq;
+    else req += w.freq;
+  });
+  const total = pos + neg + req || 1;
+  const pp = Math.round(pos / total * 100);
+  const np = Math.round(neg / total * 100);
+  const rp = 100 - pp - np;
+  document.getElementById("bar-pos").style.width = pp + "%";
+  document.getElementById("bar-neg").style.width = np + "%";
+  document.getElementById("bar-req").style.width = rp + "%";
+  document.getElementById("pct-pos").textContent = pp + "%";
+  document.getElementById("pct-neg").textContent = np + "%";
+  document.getElementById("pct-req").textContent = rp + "%";
+  document.getElementById("sent-counts").textContent = words.length + " terms";
+}
+
+let activeTab = "all";
+const tabRow = document.getElementById("tab-row");
+
+TABS.forEach(t => {
+  const btn = document.createElement("button");
+  btn.className = "tab" + (t.id === "all" ? " active" : "");
+  const inner = document.createElement("div");
+  inner.className = "tab-inner";
+  const title = document.createElement("div");
+  title.className = "tab-title";
+  title.textContent = t.label;
+  const sub = document.createElement("div");
+  sub.className = "tab-sub";
+  sub.textContent = t.sub;
+  const count = document.createElement("div");
+  count.className = "tab-count";
+  count.textContent = t.count;
+  inner.appendChild(title);
+  inner.appendChild(sub);
+  inner.appendChild(count);
+  btn.appendChild(inner);
+  btn.addEventListener("click", () => {
+    if (activeTab === t.id) return;
+    activeTab = t.id;
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentWords = wordsForTab(activeTab);
+    updateSentiment(currentWords);
+    layout(currentWords);
+  });
+  tabRow.appendChild(btn);
+});
+
+const posColor = "#97C459", negColor = "#F09595", hlColor = "#EF9F27";
+function getColor(w) { return w.cat === 2 ? hlColor : w.cat === 1 ? posColor : negColor; }
+
 const canvas = document.getElementById("wc-canvas");
-const tip = document.getElementById("tooltip");
-const ctx = canvas.getContext("2d");
+const tip    = document.getElementById("tooltip");
+const ctx    = canvas.getContext("2d");
+let W, H, placedWords = [], currentWords = allWords;
 
-let W, H, placedWords = [];
-
-function layout() {
+function layout(words) {
   const wrap = document.getElementById("wc-wrap");
   W = wrap.clientWidth || 600;
-  H = Math.max(480, Math.round(W * 0.72));
-  canvas.width = W;
-  canvas.height = H;
+  H = Math.max(460, Math.round(W * 0.7));
+  canvas.width = W; canvas.height = H;
   wrap.style.minHeight = H + "px";
 
   const freqs = words.map(w => w.freq);
   const minF = Math.min(...freqs), maxF = Math.max(...freqs);
+  const margin = 10;
 
   function fontSize(f) {
-    const t = (f - minF) / (maxF - minF);
-    return Math.round(12 + t * (W < 500 ? 26 : 34));
+    const t = (f - minF) / (maxF - minF || 1);
+    return Math.round(12 + t * (W < 500 ? 24 : 32));
   }
 
   placedWords = [];
@@ -149,123 +297,111 @@ function layout() {
 
   function overlaps(ax, ay, aw, ah) {
     for (const r of occupied) {
-      if (ax < r.x + r.w + 4 && ax + aw + 4 > r.x && ay < r.y + r.h + 4 && ay + ah + 4 > r.y) return true;
+      if (ax < r.x+r.w+5 && ax+aw+5 > r.x && ay < r.y+r.h+5 && ay+ah+5 > r.y) return true;
     }
     return false;
   }
 
-  const cx = W / 2, cy = H / 2;
-  const sorted = [...words].sort((a, b) => b.freq - a.freq);
+  const cx = W/2, cy = H/2;
+  const sorted = [...words].sort((a,b) => b.freq - a.freq);
 
   for (const word of sorted) {
     const fs = fontSize(word.freq);
     const fw = word.cat === 2 ? "500" : "400";
     ctx.font = `${fw} ${fs}px sans-serif`;
-    const metrics = ctx.measureText(word.text);
-    const ww = metrics.width;
-    const wh = fs * 1.2;
-
+    const ww = ctx.measureText(word.text).width;
+    const wh = fs * 1.25;
     let placed = false;
-    for (let r = 0; r < Math.max(W, H) * 1.5; r += 3) {
-      const angle = r * 0.18 + (word.cat === 0 ? Math.PI : 0);
-      const px = cx + r * Math.cos(angle) - ww / 2;
-      const py = cy + r * Math.sin(angle) * 0.72 + wh / 2;
-      const margin = 10;
-      if (px < margin || px + ww > W - margin || py - wh < margin || py > H - margin) continue;
-      if (!overlaps(px, py - wh, ww, wh)) {
-        placedWords.push({ word, x: px, y: py - wh, w: ww, h: wh, cx: px + ww / 2, cy: py, fs, fw });
-        occupied.push({ x: px, y: py - wh, w: ww, h: wh });
-        placed = true;
-        break;
+
+    for (let r = 0; r < Math.max(W,H)*1.6; r += 2.5) {
+      const angle = r * 0.17 + (word.cat === 0 ? Math.PI*0.6 : 0);
+      const px = cx + r*Math.cos(angle) - ww/2;
+      const py = cy + r*Math.sin(angle)*0.7 + wh/2;
+      if (px<margin || px+ww>W-margin || py-wh<margin || py>H-margin) continue;
+      if (!overlaps(px, py-wh, ww, wh)) {
+        placedWords.push({word, x:px, y:py-wh, w:ww, h:wh, cx:px+ww/2, cy:py, fs, fw});
+        occupied.push({x:px, y:py-wh, w:ww, h:wh});
+        placed = true; break;
       }
     }
     if (!placed) {
-      let px, py;
-      let attempts = 0;
+      let px, py, attempts = 0;
       do {
-        px = margin + Math.random() * (W - ww - 2 * margin);
-        py = margin + wh + Math.random() * (H - wh - 2 * margin);
+        px = margin + Math.random()*(W-ww-2*margin);
+        py = margin + wh + Math.random()*(H-wh-2*margin);
         attempts++;
-      } while (overlaps(px, py - wh, ww, wh) && attempts < 200);
-      placedWords.push({ word, x: px, y: py - wh, w: ww, h: wh, cx: px + ww / 2, cy: py, fs, fw });
-      occupied.push({ x: px, y: py - wh, w: ww, h: wh });
+      } while (overlaps(px, py-wh, ww, wh) && attempts < 300);
+      placedWords.push({word, x:px, y:py-wh, w:ww, h:wh, cx:px+ww/2, cy:py, fs, fw});
+      occupied.push({x:px, y:py-wh, w:ww, h:wh});
     }
   }
-  redraw(-1);
+  redraw(-1, words);
 }
 
-function redraw(hoverIdx) {
+function redraw(hoverIdx, words) {
   ctx.clearRect(0, 0, W, H);
-  const freqs = words.map(w => w.freq);
+  const freqs = (words||allWords).map(w=>w.freq);
   const minF = Math.min(...freqs), maxF = Math.max(...freqs);
+  const range = maxF - minF || 1;
 
   placedWords.forEach((p, i) => {
     const isHover = i === hoverIdx;
     ctx.font = `${p.fw} ${p.fs}px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "alphabetic";
-    const range = maxF - minF || 1;
-    const baseAlpha = p.word.cat === 2 ? 1 : (0.72 + 0.28 * ((p.word.freq - minF) / range));
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    const baseAlpha = p.word.cat === 2 ? 1 : (0.65 + 0.35*((p.word.freq-minF)/range));
     ctx.globalAlpha = isHover ? 1 : baseAlpha;
     ctx.fillStyle = getColor(p.word);
     if (isHover) {
-      ctx.save();
-      ctx.translate(p.cx, p.cy);
-      ctx.scale(1.08, 1.08);
-      ctx.fillText(p.word.text, 0, 0);
-      ctx.restore();
+      ctx.save(); ctx.translate(p.cx, p.cy); ctx.scale(1.07,1.07);
+      ctx.fillText(p.word.text, 0, 0); ctx.restore();
     } else {
       ctx.fillText(p.word.text, p.cx, p.cy);
     }
     if (p.word.cat === 2) {
-      ctx.globalAlpha = isHover ? 0.85 : 0.45;
-      ctx.strokeStyle = hlColor;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(p.x - 3, p.y - 2, p.w + 6, p.h + 4, 4);
-      ctx.stroke();
+      ctx.globalAlpha = isHover ? 0.9 : 0.4;
+      ctx.strokeStyle = hlColor; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(p.x-4, p.y-2, p.w+8, p.h+4, 4); ctx.stroke();
     }
     ctx.globalAlpha = 1;
   });
 }
 
 let currentHover = -1;
+
 canvas.addEventListener("mousemove", e => {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = W / rect.width;
-  const scaleY = H / rect.height;
-  const mx = (e.clientX - rect.left) * scaleX;
-  const my = (e.clientY - rect.top) * scaleY;
+  const mx = (e.clientX-rect.left)*(W/rect.width);
+  const my = (e.clientY-rect.top)*(H/rect.height);
   let found = -1;
   for (let i = 0; i < placedWords.length; i++) {
     const p = placedWords[i];
-    if (mx >= p.x - 3 && mx <= p.x + p.w + 3 && my >= p.y - 2 && my <= p.y + p.h + 2) { found = i; break; }
+    if (mx>=p.x-4 && mx<=p.x+p.w+4 && my>=p.y-3 && my<=p.y+p.h+3) { found=i; break; }
   }
   if (found !== currentHover) {
     currentHover = found;
-    redraw(currentHover);
+    redraw(currentHover, currentWords);
     if (found >= 0) {
       canvas.style.cursor = "pointer";
       const p = placedWords[found];
-      const scaleBack = rect.width / W;
-      const tx = Math.min(p.x * scaleBack, rect.width - 230);
-      const ty = (p.y + p.h) * scaleBack + 8 > rect.height - 80 ? (p.y - 90) * scaleBack : (p.y + p.h) * scaleBack + 8;
-      tip.innerHTML = `<strong>${p.word.text}</strong>${p.word.context}`;
-      tip.style.left = tx + "px";
-      tip.style.top = ty + "px";
-      tip.style.opacity = "1";
+      const sb = rect.width/W;
+      const tx = Math.min(p.x*sb, rect.width-250);
+      const ty = (p.y+p.h)*sb+10 > rect.height-90 ? (p.y-105)*sb : (p.y+p.h)*sb+10;
+      const sessLabel = SESSION_LABEL[p.word.session] || p.word.session;
+      tip.innerHTML = `<strong>${p.word.text}</strong>${p.word.context}<div class="tip-session">${sessLabel}</div>`;
+      tip.style.left = tx+"px"; tip.style.top = ty+"px"; tip.style.opacity = "1";
     } else {
-      canvas.style.cursor = "default";
-      tip.style.opacity = "0";
+      canvas.style.cursor = "default"; tip.style.opacity = "0";
     }
   }
 });
+
 canvas.addEventListener("mouseleave", () => {
-  currentHover = -1;
-  redraw(-1);
-  tip.style.opacity = "0";
+  currentHover = -1; redraw(-1, currentWords); tip.style.opacity = "0";
 });
 
-window.addEventListener("resize", () => { layout(); });
-layout();
+window.addEventListener("resize", () => { layout(currentWords); });
+
+currentWords = wordsForTab(activeTab);
+updateSentiment(currentWords);
+layout(currentWords);
 </script>
